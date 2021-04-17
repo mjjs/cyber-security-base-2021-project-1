@@ -1,0 +1,40 @@
+LINK: url
+...
+
+FLAW 1:
+Create tables sql default admin insert.
+
+The first major flaw of the application is broken authentication. First of all, the application creates a default admin user with the name admin and password admin. This is a very common default name and password for an admin, and it is not hard for an attacker to guess this.
+
+The obvious fix for this is to remove the default admin user insert from the database create file. Instead of creating it when initializing the database, there could be some setup script for the application which asks for admin credentials when installing and creates the admin user using the given credentials.
+
+FLAW 2:
+messagestore.py add_message function
+
+The application is subject to SQL injections. Almost all of the database functions take some sort of input from the user, which in turn is added straight into the SQL query. For example, when adding a new message to the messageboard, the user can give the following title to the message: "You just got hacked!', (SELECT password FROM users WHERE id = 1), 1);--". What this does is fetch the first user's (which is most likely the admin) password and post it to the message board, thus allowing the attacker to take over the admin account.
+
+To fix the injection flaw, we should not use string interpolation when creating the SQL queries, and instead we should use the database API's parameter substitution. The substitution sanitizes all the input given to the placeholders so that no SQL injection can be done.
+
+
+FLAW 3:
+admin_routes.py /admin route
+
+The application suffers from broken access control as well. The admin page can be accessed by anybody who happens to stumble across the /admin endpoint. The admin page enables users to delete other users and either make them admins or remove their admin rights.
+
+To fix this flaw, we should restrict the admin endpoint behind login and make sure that the logged in user is an actual admin. This can be easily done using the flask_login library used in this application.
+
+FLAW 4:
+Too many to count!
+
+One big flaw with the application is sensitive data exposure. This flaw manifests itself in a couple of ways. Firstly, all of the passwords are stored in the database in cleartext. This allows anybody who can get their hands on the database to steal all the passwords. The second way that the application exposes sensitive data is by using the HTTP protocol instead of the HTTPS protocol. When logging in or registering a new account, all the user information is sent over the internet in cleartext. An attacker who is listening to the connection can easily grab the data from the network and steal the user's account.
+
+To fix the first problem, we should be hashing the passwords using something like bcrypt and storing those hashes into the database. This way, if an attacker somehow gains access to the database, all they have are hashes of the passwords and cannot (at least as easily) break into the accounts.
+
+To fix the second problem, we should only accept login information through an encrypted connection. A good way to do this is to use some sort of battle-tested reverse proxy (such as Nginx) in front of the application. We can use HTTPS to transfer the sensitive information to the proxy and then terminate SSL there and pass the packets to our application. This way the attacker can have no information about the user information over the network because it is all encrypted.
+
+FLAW 5:
+All over
+
+The fifth flaw is not something we can pinpoint to a single place in the code, but it is nevertheless a major flaw. The application has next to no logging or monitoring. This is a problem because we can have an attacker trying to bruteforce their way into the application by trying every possible username-password combination and we will have no knowledge of such attack taking place.
+
+To fix this, we need to log all the important events happening in the application and add some sort of monitoring system. Logging can be easily done with Python's own logging package. Monitoring can be done by using, for example, Prometheus to store real-time metrics of the application and then alert us when something bad happens (such as too many login attempts).

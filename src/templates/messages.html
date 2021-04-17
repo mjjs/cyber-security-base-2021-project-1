@@ -1,0 +1,64 @@
+<html>
+    <head>
+        <title>Messages</title>
+        <style>
+            li {
+                list-style: none;
+                border-style: solid;
+                border-width: 1px;
+                margin-top: 5px;
+                padding-left: 5px;
+            }
+
+            li:first-child {
+                margin-top: unset;
+            }
+
+            form {
+                margin-left: 2.5em;
+            }
+
+            textarea {
+                width: 300px;
+                height: 100px;
+            }
+
+            input[type="text"] {
+                width: 300px;
+            }
+        </style>
+    </head>
+    <header>
+        <p>Logged in as: {{ current_user.username }}. Not {{ current_user.username }}? <a href="/logout">Log out</a></p>
+    </header>
+    <body>
+        <h1>Write a new message!</h1>
+        <form method="POST" action="messages">
+            <p>
+                <label>
+                    <input type="text" name="title" placeholder="Write a title!"/>
+                </label>
+            </p>
+            <p>
+                <label>
+                    <textarea name="body" placeholder="Message body"></textarea>
+                </label>
+            </p>
+            <input type="submit" value="Add message" />
+        </form>
+
+        <h1>List of current messages:</h1>
+        <ul>
+            {% for message in messages %}
+                <li>
+                    <h2>
+                        Title: {{ message.title }}
+                    </h2>
+                    <p>
+                        Body: {{ message.body }}
+                    </p>
+                </li>
+            {% endfor %}
+        </ul>
+    </body>
+</html>
