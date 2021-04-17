@@ -16,7 +16,7 @@ Here we assume the user has `python3` and `pip3` installed and in their path.
 # 1. Clone the repository
 $ git clone https://github.com/mjjs/cyber-security-base-2021-project-1
 
-# 2. Create a veirtual environment.
+# 2. Create a virtual environment.
 # This step is not mandatory, but recommended not to pollute the global environment with packages.
 $ python3 -m venv name-for-virtual-env && source name-for-virtual-env/bin/activate
 
