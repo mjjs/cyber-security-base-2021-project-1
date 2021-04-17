@@ -28,4 +28,4 @@ $ python3 app.py
 ```
 
 ## Flaws
-The flaws implemented in this project are described in the [./essay.txt](essay.txt) file.
+The flaws implemented in this project are described in the [essay.txt](essay.txt) file.
